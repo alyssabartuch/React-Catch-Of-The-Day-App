@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Header from './Header';
 import Inventory from './Inventory';
 import Order from './Order';
@@ -11,6 +12,10 @@ class App extends React.Component {
         fishes: {},
         order: {}
     };
+
+    static propTypes = { 
+        match: PropTypes.object
+    }
 
     componentDidMount() {
         const { params } = this.props.match;
@@ -32,8 +37,6 @@ class App extends React.Component {
         base.removeBinding(this.ref);        
     }
 
-    
-
     addFish = (fish) => {
         // 1. take a copy of existing state 
         const fishes = {...this.state.fishes};
@@ -52,6 +55,16 @@ class App extends React.Component {
         this.setState({ fishes })
     }
 
+    deleteFish = (key) => {
+        // 1. take a copy of existing state
+        const fishes = {...this.state.fishes};
+        // 2. set fish to null to delete (firebase)
+        fishes[key] = null;
+        // 3. update state
+        this.setState({ fishes });
+
+    }
+
     loadSampleFishes = () => {
         this.setState({ fishes: sampleFishes });
     }
@@ -65,7 +78,13 @@ class App extends React.Component {
         this.setState({ order });
     }
 
-    render() {
+    removeFromOrder = (key) => {
+        const order = {...this.state.order};
+        delete order[key];
+        this.setState({ order });
+    }
+
+    render() {        
         return (
             <div className="catch-of-the-day">
                 <div className="menu">
@@ -81,12 +100,18 @@ class App extends React.Component {
                         ))}
                     </ul>
                 </div>
-                <Order fishes={this.state.fishes} order={this.state.order} />
+                <Order 
+                    fishes={this.state.fishes} 
+                    order={this.state.order}
+                    removeFromOrder={this.removeFromOrder}
+                />
                 <Inventory 
                     addFish={this.addFish} 
                     updateFish={this.updateFish}
+                    deleteFish={this.deleteFish}
                     loadSampleFishes={this.loadSampleFishes} 
                     fishes={this.state.fishes}
+                    storeId={this.props.match.params.storeId}
                 />
             </div>
         );

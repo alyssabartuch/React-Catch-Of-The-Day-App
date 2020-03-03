@@ -1,15 +1,25 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class EditFishForm extends React.Component {
-    handleChange = (event) => {
-        
-        // update the fish 
-        // 1. take a copy of current fish 
+    static propTypes = {
+        fish: PropTypes.shape({
+            name: PropTypes.string,
+            status: PropTypes.string, 
+            desc: PropTypes.string,
+            image: PropTypes.string,
+            price: PropTypes.number
+        }),
+        index: PropTypes.string,
+        updateFish: PropTypes.func, 
+        deleteFish: PropTypes.func
+    };
+    
+    handleChange = (event) => {  
         const updatedFish = { 
             ...this.props.fish, 
             [event.currentTarget.name]: event.currentTarget.value  
         };
-        // 2. 
         this.props.updateFish(this.props.index, updatedFish);
     };
     
@@ -50,6 +60,7 @@ class EditFishForm extends React.Component {
                     onChange={ this.handleChange} 
                     value={this.props.fish.image} 
                 />
+                <button onClick={() => this.props.deleteFish(this.props.index)}>Remove Fish</button>
             </div>
         );
     }
